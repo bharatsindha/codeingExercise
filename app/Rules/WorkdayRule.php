@@ -5,6 +5,7 @@ namespace App\Rules;
 use App\Facades\General;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
+use Throwable;
 
 class WorkdayRule implements Rule
 {
@@ -27,7 +28,11 @@ class WorkdayRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        return Carbon::createFromFormat(General::DATE_FORMAT, $value)->isWeekday();
+        try {
+            return Carbon::createFromFormat(General::DATE_FORMAT, $value)->isWeekday();
+        } catch (Throwable $e) {
+            return false;
+        }
     }
 
     /**

@@ -12,10 +12,15 @@ use Throwable;
 
 class BookingController extends Controller
 {
+    /**
+     * Booking the boat's seat
+     *
+     * @param CreateBookRequest $request
+     * @return JsonResponse
+     */
     public function create(CreateBookRequest $request)
     {
         try {
-
             // Get the request query parameters
             $date = Carbon::createFromFormat(General::DATE_FORMAT, $request->get('date'))->toDateString();
             $numOfGuests = $request->get('numOfGuests');
@@ -37,7 +42,7 @@ class BookingController extends Controller
 
                 // Check the requested guests with maximum number of guests limit
                 // If requested guests are more than limit then throw validation error
-                if ((int)$bookItem['numOfGuests'] + $numOfGuests > General::GUEST_LIMIT) {
+                if (((int)$bookItem['numOfGuests'] + (int)$numOfGuests) > General::GUEST_LIMIT) {
 
                     $availableSeats = General::GUEST_LIMIT - (int)$bookItem['numOfGuests'];
                     $errorMessage = $availableSeats > 0 ?
@@ -78,12 +83,11 @@ class BookingController extends Controller
                 'data'    => $request->all(),
                 'message' => __('messages.success_booked')
             ], 200);
-        } catch (Throwable $e) {
-            $errorMessage = $e->getMessage();
 
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'data'    => $errorMessage,
+                'data'    => $e->getMessage(),
                 'message' => __('messages.error_in_book')
             ], 500);
         }
@@ -115,12 +119,11 @@ class BookingController extends Controller
                 'data'    => $mappedCollections->toArray(),
                 'message' => __('messages.success_fetched')
             ], 200);
-        } catch (Throwable $e) {
-            $errorMessage = $e->getMessage();
 
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'data'    => $errorMessage,
+                'data'    => $e->getMessage(),
                 'message' => __('messages.error_in_fetch')
             ], 500);
         }

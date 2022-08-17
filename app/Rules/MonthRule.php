@@ -5,6 +5,7 @@ namespace App\Rules;
 use App\Facades\General;
 use Carbon\Carbon;
 use Illuminate\Contracts\Validation\Rule;
+use Throwable;
 
 class MonthRule implements Rule
 {
@@ -27,9 +28,14 @@ class MonthRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        $bookableDate = Carbon::createFromFormat(General::DATE_FORMAT, $value)->monthName;
+        try {
+            $bookableDate = Carbon::createFromFormat(General::DATE_FORMAT, $value)->monthName;
 
-        return in_array($bookableDate, General::ENABLED_MONTH_LIST);
+            return in_array($bookableDate, General::ENABLED_MONTH_LIST);
+        } catch (Throwable $e) {
+            return false;
+        }
+
     }
 
     /**
